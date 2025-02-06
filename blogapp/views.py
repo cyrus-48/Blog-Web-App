@@ -38,6 +38,18 @@ class AboutView(View):
 
     def get(self,request):
         return render(request , template_name=self.template_name)
+    
+
+class PostCreateView(LoginRequiredMixin , CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'create_post.html'
+    success_url = reverse_lazy('filter_posts')   
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+     
       
 class PostDetailView(DetailView, FormView):
     model = Post
@@ -287,21 +299,3 @@ class CustomLogoutView(View):
         return HttpResponseRedirect(reverse('home'))
     
     
-class PostCreateView(LoginRequiredMixin , CreateView):
-    model = Post
-    form_class = PostForm
-    template_name = 'create_post.html'
-    success_url = reverse_lazy('filter_posts')  # Redirect to a post list or detail page after successful creation
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
-    
-    
-class PostCreateVuewP(LoginRequiredMixin , CreateView):
-    model = Post 
-    form_class = PostForm
-    template_name = 'create_ppost.html'
-    success_url =  reverse_lazy('filter_posts')
-    
- 
