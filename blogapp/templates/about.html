@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- About Section -->
+<section class="max-w-7xl mx-auto px-4 py-12 bg-white rounded-lg shadow-lg">
+    <!-- Title -->
+    <h2 class="text-center text-4xl font-bold bg-gradient-to-r from-[#e87a00] to-[#001f3d] text-transparent bg-clip-text mb-10">
+        About Us
+    </h2>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- About Text -->
+        <div>
+            <h3 class="text-3xl font-semibold text-[#001f3d] mb-4">Who We Are</h3>
+            <p class="text-gray-700 leading-relaxed mb-6">
+                We are a passionate team dedicated to bringing you the latest news and insights from around the world. Our mission is to provide our readers with accurate, timely, and engaging content that keeps them informed and inspired.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-6">
+                With a focus on quality and integrity, we strive to deliver stories that matter, from breaking news to in-depth analysis, covering a wide range of topics including technology, lifestyle, business, and more.
+            </p>
+            <a href="#our-story" class="inline-block bg-[#e87a00] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#d56a00] transition duration-300">Read Our Story</a>
+        </div>
+
+        <!-- About Image -->
+        <div class="rounded-lg overflow-hidden shadow-lg">
+            <img src="{% static 'images/about-us.jpg' %}" alt="About Us" class="w-full h-full object-cover">
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Our Mission -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h4 class="text-2xl font-semibold text-[#001f3d] mb-4">Our Mission</h4>
+            <p class="text-gray-700 leading-relaxed">
+                To empower our readers with the information they need to navigate the complexities of the modern world, fostering a well-informed and engaged community.
+            </p>
+        </div>
+
+        <!-- Our Vision -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h4 class="text-2xl font-semibold text-[#001f3d] mb-4">Our Vision</h4>
+            <p class="text-gray-700 leading-relaxed">
+                To become a trusted source of news and insights, known for our commitment to journalistic excellence and our dedication to serving the public good.
+            </p>
+        </div>
+
+        <!-- Our Values -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h4 class="text-2xl font-semibold text-[#001f3d] mb-4">Our Values</h4>
+            <p class="text-gray-700 leading-relaxed">
+                Integrity, transparency, and a relentless pursuit of truth are at the heart of everything we do. We believe in the power of journalism to effect positive change in the world.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}

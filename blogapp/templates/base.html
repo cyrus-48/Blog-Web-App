@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}My Blog{% endblock %}</title>
+    <link href="{% static 'css/dist/styles.css' %}" rel="stylesheet">
+    <script src="{% static 'ckeditor/ckeditor.js' %}"></script>
+    <style> 
+    .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    }
+ 
+    .scrollbar-hide {
+    -ms-overflow-style: none;  
+    scrollbar-width: none;  
+    }
+
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 p-0 {% if user.is_authenticated %}user-authenticated{% endif %}">
+<!-- Modal Structure -->
+<div id="authModal" class="fixed inset-0 mx-20 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg shadow-lg max-w-md w-full relative">
+        <button class="absolute top-2 right-2 text-gray-600" onclick="closeModal()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <div class="p-6">
+            <div id="authForm">  
+                <!-- Sign Up Form -->
+                <div id="signUpForm" class="hidden">
+                    <div class="text-center mb-4">
+                        <div class="text-2xl font-bold">
+                            <a href="{% url  'home' %}" class="hover:text-[#e87a00]">
+                                <span class="text-[#e87a00] text-2xl hover:text-white font-bold">BL</span>OGO
+                            </a>
+                        </div>
+                        <p class="text-[#001f3d] mt-2">Create your account</p>
+                    </div>
+                    <div class="text-center mb-4">
+                        <p class="text-sm text-[#e87a00] underline">Have an account ? <button class="text-sm text-white bg-[#e87a00]" onclick="openModal('signInForm')"> Sign in</button> </p>
+                    </div>
+                    <form method="post" action="{% url 'register' %}">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <input type="text" name="first_name" class="w-full py-2 px-3 border border-gray-300 rounded-lg" placeholder="First Name" required>
+                        </div>
+                        <div class="mb-4">
+                            <input type="text" name="last_name" class="w-full py-2 px-3 border border-gray-300 rounded-lg" placeholder="Last Name" required>
+                        </div>
+                        <div class="mb-4">
+                            <input type="email" name="email" class="w-full py-2 px-3 border border-gray-300 rounded-lg" placeholder="Email" required>
+                        </div>
+                        <div class="mb-6">
+                            <input type="password" name="password1" class="w-full py-2 px-3 border border-gray-300 rounded-lg" placeholder="Password" required>
+                        </div>
+                        <div class="mb-6">
+                            <input type="password" name="password2" class="w-full py-2 px-3 border border-gray-300 rounded-lg" placeholder="Confirm Password" required>
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-[#e87a00] text-white font-semibold rounded-lg">Sign Up</button>
+                    </form>
+                </div>
+                <!-- Sign In Form -->
+                <div id="signInForm" class="hidden">
+                    <div class="text-center mb-4">
+                        <div class="text-2xl font-bold">
+                            <a href="{% url 'home' %}" class="hover:text-[#e87a00]">
+                                <span class="text-[#e87a00] text-2xl hover:text-white font-bold">BL</span>OGO
+                            </a>
+                        </div>
+                        <p class="text-[#001f3d] mt-2">Welcome back</p>
+                        <div class="text-center mb-4">
+                            <p class="text-sm text-[#e87a00] underline">Don't have an account? <button class="text-sm text-white bg-[#e87a00]" onclick="openModal('signUpForm')"> Sign Up</button> </p>
+                        </div>
+                    </div>
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <input type="text" name="username" class="w-full py-2 px-3 border border-gray-300 rounded-lg" placeholder="Email" required>
+                        </div>
+                        <div class="mb-6">
+                            <input type="password" name="password" class="w-full py-2 px-3 border border-gray-300 rounded-lg" placeholder="Password" required>
+                        </div>
+                        <button type="submit" class="w-full py-2 bg-[#e87a00] text-white font-semibold rounded-lg">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+     <!-- top navigation bar -->
+<nav class="bg-[#001f3d] text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <!-- logo text -->
+        <div class="text-2xl font-bold">
+            <a href="{% url 'home' %}" class="hover:text-[#e87a00]">
+                <span class="text-[#e87a00] text-2xl hover:text-white font-bold">BL</span>OGO
+            </a>
+        </div>
+
+        <!-- dt menu -->
+        <div class="hidden md:flex space-x-6 items-center">
+            <a href="{% url 'home' %}" class="hover:text-[#e87a00]">Home</a>
+            <a href="{% url 'filter_posts' %}" class="hover:text-[#e87a00]">Blogs</a>
+            <a href="{% url 'about' %}" class="hover:text-[#e87a00]">About </a>
+            <a href="{% url 'contact' %}" class="hover:text-[#e87a00]">Contact</a>
+
+            {% if user.is_authenticated %}
+                <!-- Profile Icon with Dropdown -->
+                <div class="relative">
+                    <button id="profileMenuToggle" class="flex items-center">
+                        <img src="{{ user.profile.image.url }}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-[#e87a00]">
+                        <span class="ml-2">{{ user.username }}</span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div id="profileDropdown" class="absolute right-0 mt-2 w-48 bg-white text-[#001f3d] border border-[#e87a00] rounded-lg shadow-lg hidden">
+                        <a href="{% url 'profile' %}" class="block px-4 py-2  hover:text-[#e87a00]">Profile Settings</a>
+                        <a href="{% url 'logout' %}" class="block px-4 py-2   hover:text-[#e87a00]">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Sign Up / Sign In Button -->
+                <button class="bg-[#e87a00] text-white px-4 py-2 rounded-lg hover:bg-[#cc6b00]" onclick="openModal('signInForm')">Sign Up / Sign In</button>
+            {% endif %}
+        </div>
+
+        <!-- Toggle -->
+        <button id="mobileMenuToggle" class="md:hidden text-2xl focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="md:hidden bg-[#001f3d] text-white absolute inset-x-0 top-full hidden">
+        <div class="px-4 py-3">
+            <a href="{% url 'home' %}" class="block py-2 hover:text-[#e87a00]">Home</a>
+            <a href="{% url 'filter_posts' %}" class="block py-2 hover:text-[#e87a00]">Blogs</a>
+            <a href="{% url 'about' %}" class="block py-2 hover:text-[#e87a00]">About</a>
+            <a href="{% url 'contact' %}" class="block py-2 hover:text-[#e87a00]">Contact</a>
+
+            {% if user.is_authenticated %}
+                <!-- Profile Icon in Mobile Menu -->
+                <div class="relative mt-4">
+                    <button id="profileMenuToggleMobile" class="flex items-center">
+                        <img src="{{ user.profile.image.url }}" alt="Profile" class="w-8 h-8 rounded-full border-2 border-[#e87a00] mr-2">
+                        <span class="text-[#e87a00]">{{ user.username }}</span>
+                    </button>
+                    <!-- Dropdown Menu in Mobile -->
+                    <div id="profileDropdownMobile" class="absolute left-0 mt-2 w-48 bg-white text-[#001f3d] border border-[#e87a00] rounded-lg shadow-lg hidden">
+                        <a href="{% url 'profile' %}" class="block px-4 py-2 hover:bg-[#e87a00] hover:text-white">Profile Settings</a>
+                        <a href="{% url 'logout' %}" class="block px-4 py-2 hover:bg-[#e87a00] hover:text-white">Logout</a>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Sign Up / Sign In Button in Mobile Menu -->
+                <button class="bg-[#e87a00] text-white px-4 py-2 rounded-lg hover:bg-[#cc6b00]" onclick="openModal('signInForm')">Sign Up / Sign In</button>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+
+<script>
+    function openModal(formId) {
+        document.getElementById('authModal').classList.remove('hidden');
+        document.getElementById('signUpForm').classList.toggle('hidden', formId !== 'signUpForm');
+        document.getElementById('signInForm').classList.toggle('hidden', formId !== 'signInForm');
+    }
+
+    function closeModal() {
+        document.getElementById('authModal').classList.add('hidden');
+    }
+</script>
+
+<script>
+    // Toggle Dropdown for Desktop
+    document.getElementById('profileMenuToggle').addEventListener('click', function() {
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.classList.toggle('hidden');
+    });
+
+    // Toggle Dropdown for Mobile
+    document.getElementById('profileMenuToggleMobile').addEventListener('click', function() {
+        const dropdown = document.getElementById('profileDropdownMobile');
+        dropdown.classList.toggle('hidden');
+    });
+
+    // Toggle Mobile Menu
+    document.getElementById('mobileMenuToggle').addEventListener('click', function() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('hidden');
+    });
+
+    // Close dropdown if clicked outside (for Desktop)
+    document.addEventListener('click', function(event) {
+        const profileDropdown = document.getElementById('profileDropdown');
+        if (!event.target.closest('#profileMenuToggle')) {
+            profileDropdown.classList.add('hidden');
+        }
+
+        const profileDropdownMobile = document.getElementById('profileDropdownMobile');
+        if (!event.target.closest('#profileMenuToggleMobile')) {
+            profileDropdownMobile.classList.add('hidden');
+        }
+    });
+</script>
+
+<!--  main section -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#001f3d] text-white py-6">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
+                <!-- Logo and Description -->
+                <div class="text-center md:text-left">
+                    <h1 class="text-2xl font-bold mb-2"><span class="text-[#e87a00] text-2xl hover:text-white font-bold">BL</span>OGO</h1>
+                    <p class="text-sm">Your go-to source for the latest news and updates.</p>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
+                    <a href="{% url 'home' %}" class="hover:text-[#e87a00]">Home</a>
+                    <a href="{% url 'filter_posts' %}" class="hover:text-[#e87a00]">Blogs</a>
+                    <a href="{% url 'about' %}" class="hover:text-[#e87a00]">About</a> 
+                    <a href="{% url 'contact' %}" class="hover:text-[#e87a00]">Contact</a>
+                </div>
+    
+                <!-- Contact Information -->
+                <div class="text-center md:text-right">
+                    <p class="text-sm mb-2">Contact us: <a href="mailto:info@yourdomain.com" class="hover:text-[#e87a00]">info@yourdomain.com</a></p>
+                    <p class="text-sm">Follow us:</p>
+                    <div class="flex justify-center md:justify-end space-x-4 mt-2">
+                        <a href="#" class="hover:text-[#e87a00]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6m6 6v-6m0 0V6m0 6L6 6m12 6l6-6"></path></svg></a>
+                        <a href="#" class="hover:text-[#e87a00]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 0h6M3 12a9 9 0 01-2-6v6a9 9 0 012 6m14-6a9 9 0 012-6v6a9 9 0 01-2 6m-2-6a9 9 0 01-2-6V6a9 9 0 012 6m0 6a9 9 0 012-6"></path></svg></a>
+                        <a href="#" class="hover:text-[#e87a00]"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h8m-8 0l4-4m-4 4l4 4m0 0H8m0 0h8"></path></svg></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="bg-[#001a33] text-center py-4 mt-6 font-bold">
+            <p class="text-sm">&copy; 2024 <span class="text-[#e87a00]   hover:text-white  ">BL</span>OGO. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

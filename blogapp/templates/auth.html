@@ -1,0 +1,71 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+ <div class="relative max-w-md mx-auto mt-10 bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-[#e87a00] to-[#001f3d] opacity-70"></div>
+    <div class="relative z-10 p-6 space-y-6">
+        <div class="flex justify-between items-center">
+            <button class="text-lg font-semibold text-white transition-colors duration-300 hover:text-[#f7b500]" onclick="showSignUp()">Sign Up</button>
+            <button class="text-lg font-semibold text-white transition-colors duration-300 hover:text-[#f7b500]" onclick="showSignIn()">Sign In</button>
+        </div>
+        <div id="authForm" class="transition-opacity duration-500">
+            <!-- Sign Up Form -->
+            <div id="signUpForm">
+                <div class="text-center mb-4">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQPaGC4_99aldnm8LyX7Pu-aAJr50L1VRAg7JzC3RYLkhMkga8tdsZUr1PkbCs3oT1i2I&usqp=CAU" alt="Logo" class="mx-auto w-16 h-16">
+                    <p class="text-white mt-2">Create your account</p>
+                </div>
+                <form method="post" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <div class="relative mb-4">
+                        <input type="text" id="signupName" name="first_name" class="w-full py-2 px-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e87a00] transition duration-300" placeholder="First Name" required>
+                    </div>
+                    <div class="relative mb-4">
+                        <input type="text" id="signupLastName" name="last_name" class="w-full py-2 px-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e87a00] transition duration-300" placeholder="Last Name" required>
+                    </div>
+                    <div class="relative mb-4">
+                        <input type="email" id="signupEmail" name="email" class="w-full py-2 px-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e87a00] transition duration-300" placeholder="Email" required>
+                    </div>
+                    <div class="relative mb-6">
+                        <input type="password" id="signupPassword" name="password1" class="w-full py-2 px-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e87a00] transition duration-300" placeholder="Password" required>
+                    </div>
+                    <div class="relative mb-6">
+                        <input type="password" id="signupPassword2" name="password2" class="w-full py-2 px-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e87a00] transition duration-300" placeholder="Confirm Password" required>
+                    </div>
+                    <button type="submit" class="w-full py-2 bg-[#e87a00] text-white font-semibold rounded-lg hover:bg-[#f7b500] transition duration-300">Sign Up</button>
+                </form>
+            </div>
+            <!-- Sign In Form -->
+            <div id="signInForm" class="hidden">
+                <div class="text-center mb-4">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQPaGC4_99aldnm8LyX7Pu-aAJr50L1VRAg7JzC3RYLkhMkga8tdsZUr1PkbCs3oT1i2I&usqp=CAU" alt="Logo" class="mx-auto w-16 h-16">
+                    <p class="text-white mt-2">Welcome back</p>
+                </div>
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="relative mb-4">
+                        <input type="email" id="signinEmail" name="username" class="w-full py-2 px-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e87a00] transition duration-300" placeholder="Email" required>
+                    </div>
+                    <div class="relative mb-6">
+                        <input type="password" id="signinPassword" name="password" class="w-full py-2 px-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#e87a00] transition duration-300" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="w-full py-2 bg-[#e87a00] text-white font-semibold rounded-lg hover:bg-[#f7b500] transition duration-300">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showSignUp() {
+        document.getElementById('signUpForm').classList.remove('hidden');
+        document.getElementById('signInForm').classList.add('hidden');
+    }
+
+    function showSignIn() {
+        document.getElementById('signInForm').classList.remove('hidden');
+        document.getElementById('signUpForm').classList.add('hidden');
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,134 @@
+<!-- comment partial -->
+
+{% for comment in comments %}
+<div class="flex">
+    <img src="{{ comment.author.profile.image.url }}" alt="User Avatar" class="w-10 h-10 rounded-full mr-4">
+    <div class="w-full">
+        <p class="font-semibold text-gray-800">{{ comment.author.username }}</p>
+        <p class="text-gray-600 text-sm">{{ comment.created_at|date:"F j, Y" }}</p>
+        <p class="text-gray-800 mt-2">{{ comment.content }}</p>
+        {% if comment.image %}
+            <img src="{{ comment.image.url }}" alt="Comment Image" class="rounded-lg mt-2">
+        {% endif %}
+        <div class="flex items-center mt-2">
+            <form method="post" action="{% url 'like_toggle' slug=comment.post.slug %}" class="like-form" data-comment-id="{{ comment.id }}">
+                {% csrf_token %}
+                <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                <div class="flex items-center">
+                    <button type="submit" class="text-[#e87a00] text-sm hover:text-[#cc6b00] flex items-center">
+                        <svg class="w-5 h-5 mr-1 {% if request.user in comment.likes.all %}fill-[#e87a00]{% else %}fill-none stroke-[#e87a00]{% endif %}" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span class="like-text">
+                            {% if request.user in comment.likes.all %}Unlike{% else %}Like{% endif %}
+                        </span>
+                    </button>
+                    <span class="ml-2 text-gray-600 text-sm like-count">{{ comment.likes.count }} Likes</span>
+                </div>
+            </form>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const likeForms = document.querySelectorAll('.like-form');
+                    likeForms.forEach(form => {
+                        form.addEventListener('submit', async function(e) {
+                            e.preventDefault();
+                            if (!document.querySelector('body').classList.contains('user-authenticated')) {
+                                alert('Please log in to like comments');
+                                return;
+                            }
+
+                            const formData = new FormData(this);
+                            const commentId = this.dataset.commentId;
+                            
+                            try {
+                                const response = await fetch(this.action, {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                });
+                                
+                                const data = await response.json();
+                                if (data.success) {
+                                    const likeIcon = this.querySelector('svg');
+                                    const likeText = this.querySelector('.like-text');
+                                    const likeCount = this.querySelector('.like-count');
+                                    
+                                    if (data.liked) {
+                                        likeIcon.classList.remove('fill-none');
+                                        likeIcon.classList.add('fill-[#e87a00]');
+                                        likeText.textContent = 'Unlike';
+                                    } else {
+                                        likeIcon.classList.remove('fill-[#e87a00]');
+                                        likeIcon.classList.add('fill-none');
+                                        likeText.textContent = 'Like';
+                                    }
+                                    
+                                    likeCount.textContent = `${data.like_count} Likes`;
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    });
+                });
+            </script>
+            <button class="toggle-comment-form text-[#e87a00] text-sm ml-4 hover:text-[#cc6b00]">Reply</button>
+        </div>
+
+        <!-- Reply Form (Hidden by Default) -->
+        <form method="post" data-post-slug="{{ post.slug }}" class="comment-form mt-2" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+            <textarea name="content" rows="2" class="w-full rounded-md border border-gray-300 p-2" placeholder="Reply to this comment" required></textarea>
+            <div class="flex justify-between items-center mt-2">
+                <button type="submit" class="bg-[#e87a00] text-white px-4 py-2 rounded-md hover:bg-[#cc6b00]">Reply</button>
+                <span class="text-red-500 text-sm error-message" style="display: none;"></span>
+            </div>
+        </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const commentForms = document.querySelectorAll('.comment-form');
+                commentForms.forEach(form => {
+                    form.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        const formData = new FormData(this);
+                        const postSlug = this.dataset.postSlug;
+                        const errorMessage = this.querySelector('.error-message');
+                        
+                        try {
+                            const response = await fetch(`/post/${postSlug}/comment/`, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
+                            
+                            const data = await response.json();
+                            if (data.success) {
+                                location.reload(); // Refresh to show new comment
+                            } else {
+                                errorMessage.textContent = data.errors;
+                                errorMessage.style.display = 'block';
+                            }
+                        } catch (error) {
+                            errorMessage.textContent = 'An error occurred. Please try again.';
+                            errorMessage.style.display = 'block';
+                        }
+                    });
+                });
+            });
+        </script>
+        <!-- Nested Replies -->
+        {% if comment.replies.all %}
+            <button class="view-more-comments text-sm text-gray-600 mt-2 hover:underline">View More</button>
+            <div class="mt-4 pl-6 space-y-4" style="display: none;">
+
+                {% include  'comment.html' with comments=comment.replies.all %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<section class="max-w-7xl mx-auto px-4 py-12 bg-white rounded-lg shadow-lg"> 
+    <h2 class="text-center text-4xl font-bold bg-gradient-to-r from-[#e87a00] to-[#001f3d] text-transparent bg-clip-text mb-10">
+        Create a New Blog Post
+    </h2>
+
+    <form action="{% url 'create_post' %}" method="POST" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %} 
+        <div>
+            <label for="id_title" class="block text-2xl font-semibold text-[#001f3d] mb-2">Blog Title</label>
+            <input type="text" id="id_title" name="title" value="{{ form.title.value }}" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#e87a00]" placeholder="Enter your blog title" required>
+        </div>
+ 
+        <div>
+            <label for="id_category" class="block text-2xl font-semibold text-[#001f3d] mb-2">Category</label>
+            <select id="id_category" name="category" class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#e87a00]" required>
+                <option value="" disabled selected>Select a category</option>
+                {% for category in form.category.field.queryset %}
+                    <option value="{{ category.id }}" {% if category.id == form.category.value %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div> 
+        <div>
+            <label for="id_content" class="block text-2xl font-semibold text-[#001f3d] mb-2">Content</label>
+            {{ form.content|safe }}
+        </div>  
+      <!-- Image Upload Section with Custom Icon -->
+        <div class="relative">
+            <label for="id_image" class="block text-2xl font-semibold text-[#001f3d] mb-2">Image (Optional)</label>
+            
+            <!-- Clickable Upload Area -->
+            <label for="id_image" class="cursor-pointer flex items-center justify-center w-full h-12 p-3 bg-white border border-gray-300 rounded-lg shadow-md hover:border-[#e87a00] focus-within:border-[#e87a00] transition-all duration-300">
+                <!-- Custom Icon -->
+                <img src="your-icon-url.png" alt="Upload Icon" class="w-6 h-6 text-[#e87a00] mr-2">
+                <span id="fileName" class="text-gray-600">Choose an image</span>
+            </label>
+            
+            <!-- Hidden Input Field -->
+            <input type="file" id="id_image" name="image" class="sr-only" onchange="updateFileName()">
+        </div>
+
+        <script>
+            function updateFileName() {
+                const fileInput = document.getElementById('id_image');
+                const fileNameSpan = document.getElementById('fileName');
+                if (fileInput.files.length > 0) {
+                    fileNameSpan.textContent = fileInput.files[0].name;
+                } else {
+                    fileNameSpan.textContent = 'Choose an image';
+                }
+            }
+        </script>
+
+        <div class="text-center">
+            <button type="submit" class="bg-[#e87a00] hover:bg-[#d56a00] text-white py-3 px-8 rounded-lg font-bold transition duration-300">
+                Publish Post
+            </button>
+        </div>
+    </form>
+</section>
+{% endblock %}

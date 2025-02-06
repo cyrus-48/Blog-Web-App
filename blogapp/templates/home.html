@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero section   -->
+<section class="relative bg-cover bg-center h-[400px]" style="background-image: url('{% static 'img/banner.webp' %}');">
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60"></div>
+    <div class="relative z-10 flex flex-col items-center justify-center h-full text-center text-white p-6">
+        <h1 class="text-4xl font-bold mb-4">Welcome to Our Blog</h1>
+        <p class="text-lg mb-6">Discover the latest insights, tips, and trends in the industry.</p>
+        <a href="{% url  'filter_posts' %}" class="bg-[#e87a00] text-white py-2 px-6 rounded-lg hover:bg-[#f7b500] transition duration-300">Explore Now</a>
+    </div>
+</section> 
+<!-- Categories Section -->
+<section class="bg-white py-12">
+    <div class="max-w-6xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-gray-900 text-center mb-8">Explore Categories</h2>
+        <div class="flex space-x-4 overflow-x-auto scrollbar-hide">
+            {% for category in categories %}
+            <!-- Category Card -->
+            <a href="#" class="flex-shrink-0 w-64 bg-[#e87a00] rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 transform hover:scale-105">
+                <div class="p-6 text-center">
+                    <h3 class="text-xl font-semibold text-white">{{ category.name }}</h3>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section> 
+ 
+<!-- Latest Posts Section --> 
+<section class="py-12 bg-white">
+    <div class="max-w-6xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-[#001f3d] text-center mb-8">Latest Posts</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {% for post in latest_posts %}
+            <!-- Post Card  -->
+            <div class="relative w-full h-64 bg-cover bg-center rounded-lg overflow-hidden" style="background-image: url('{{post.image.url}}');">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#001f3d] via-[#001f3d] to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 w-full p-4 text-white">
+                    <a href="{% url  'post_detail' post.slug %}" class="text-lg font-bold hover:text-[#e87a00] ">{{ post.title | capfirst}}</a>
+                    <p class="text-sm opacity-75">{{ post.created_at|date:"F j, Y" }}</p>
+                    <div class="flex items-center mt-2">
+                        <img src="{{ post.author.profile.image.url }}" alt="Author Avatar" class="w-10 h-10 rounded-full border-2 border-white">
+                        <div class="ml-3">
+                            <p class="text-sm font-semibold">{{post.author.first_name | capfirst}} {{post.author.last_name | capfirst}}</p>
+                            <p class="text-xs opacity-75 font-bold text-[#001f3g]">@{{post.author}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %} 
+        </div>
+    </div>
+</section> 
+<!--news letter section-->
+<section class="bg-[#001f3d] py-12">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold text-white mb-4">Subscribe to Our Newsletter</h2>
+        <p class="text-lg text-[#e87a00] mb-8">Get the latest updates and offers right in your inbox.</p>
+        <form class="flex flex-col sm:flex-row justify-center gap-4">
+            <input type="email" placeholder="Enter your email" class="w-full sm:w-2/3 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-[#e87a00]">
+            <button type="submit" class="w-full sm:w-auto bg-[#e87a00] text-white px-6 py-3 rounded-md hover:bg-[#cc6b00] transition-colors duration-300">Subscribe</button>
+        </form>
+    </div>
+</section>
+
+
+{% endblock %}
