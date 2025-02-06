@@ -34,9 +34,9 @@ BLOGO is a  blog platform built with Django and styled with Tailwind CSS. It pro
 ## Setup Instructions
 
 1. Clone the repository
-```bash
-git clone https://github.com/cyrus-mwendwa/blog-master.git
-cd blog-master
+```bash 
+clone
+cd  to-repo
 ```
 
 2. Create and activate virtual environment
