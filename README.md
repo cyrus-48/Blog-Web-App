@@ -31,6 +31,23 @@ BLOGO is a  blog platform built with Django and styled with Tailwind CSS. It pro
 - Dark/Light mode support
 - Smooth transitions and animations
 
+## Screenshots
+
+### Home Page Views
+![Home Page Hero Section](screenshots/home1.png)
+![Featured Posts Section](screenshots/home2.png)
+![Categories Section](screenshots/home3.png)
+
+### Blog Features
+![Blog Listings](screenshots/blogs.png)
+![Blog Detail View](screenshots/blog.png)
+
+### Social Engagement
+![Comments and Likes](screenshots/commentlikes.png)
+
+### User Profile
+![User Profile Page](screenshots/profile.png)
+
 ## Setup Instructions
 
 1. Clone the repository

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ( HomeView, PostCreateView , PostDetailView , LikeToggleView , FilterPostsView ,ContactView
+from .views import ( HomeView,  PostDetailView , LikeToggleView , FilterPostsView ,ContactView
                      , RegisterView ,LoginView , ProfileUpdateView , 
                      ProfileView , CommentFormView ,CustomLogoutView ,  AboutView)
 urlpatterns = [
@@ -14,7 +14,6 @@ urlpatterns = [
     path('post/<slug:slug>/comment/', CommentFormView.as_view(), name='post_comment'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path('contact/' , ContactView.as_view()  , name='contact' ),
-    path('about/',AboutView.as_view() , name="about"),
-    path('create/', PostCreateView.as_view(), name='create_post'),
+    path('about/',AboutView.as_view() , name="about"), 
 
 ]
